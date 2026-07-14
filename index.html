@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Do women who study STEM stay in STEM? — Carolina Cenzano</title>
 <meta name="description" content="A retention study of women in US STEM fields built on the NSF's 2023 National Survey of College Graduates.">
@@ -10,15 +11,18 @@
 <link rel="stylesheet" href="assets/style.css">
 <script src="https://cdn.plot.ly/plotly-2.32.0.min.js" charset="utf-8"></script>
 <script src="data.js"></script>
+<script src="assets/theme.js"></script>
 </head>
 <body>
 
 <nav class="top">
   <div class="wrap">
-    <a class="brand" href="https://github.com/Carolina-Cenzano">Carolina Cenzano</a>
+    <a class="brand" href="https://carolina-cenzano.github.io/">Carolina Cenzano</a>
     <span class="links">
+      <a href="https://carolina-cenzano.github.io/">Portfolio</a>
       <a href="https://carolina-cenzano.github.io/movie-rating-prediction/">Movie rating project</a>
       <a href="https://github.com/Carolina-Cenzano/women-in-stem-retention">Code on GitHub</a>
+      <button id="theme-btn" class="theme-btn" onclick="toggleTheme()" aria-label="Toggle dark mode">Dark</button>
     </span>
   </div>
 </nav>
@@ -142,18 +146,28 @@
     "Chemistry": "#008300", "Engineering": "#4a3aa7"
   };
   const WOMEN = "#2a78d6", MEN = "#1baf7a";
-  const GREY = "#c3c2b7";
-  const INK = "#0b0b0b", INK2 = "#52514e", MUTED = "#898781", GRID = "#e1e0d9";
-  const FONT = { family: 'system-ui, -apple-system, "Segoe UI", sans-serif', size: 13, color: INK2 };
-
-  const BASE = {
-    paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)",
-    font: FONT, margin: { l: 60, r: 20, t: 10, b: 60 },
-    hoverlabel: { bgcolor: "#0f1a19", font: { color: "#fff", size: 13 }, bordercolor: "#0f1a19" }
-  };
-  const AXIS = { gridcolor: GRID, zerolinecolor: GRID, linecolor: "#c3c2b7", tickfont: FONT };
+  const GREY = "#b9b8ad";
   const CFG = { displayModeBar: false, responsive: true };
   const pct = v => (v * 100).toFixed(1) + "%";
+
+  function themeVars() {
+    const dark = (document.documentElement.getAttribute("data-theme")
+      || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")) === "dark";
+    return dark
+      ? { ink2: "#c3c2b7", muted: "#8f8e86", grid: "#2c2c2a", surf: "#1a1a19", line: "#3a3a37" }
+      : { ink2: "#52514e", muted: "#898781", grid: "#e1e0d9", surf: SURF, line: "#c3c2b7" };
+  }
+
+  function renderCharts() {
+    const TH = themeVars();
+    const INK2 = TH.ink2, MUTED = TH.muted, GRID = TH.grid, SURF = TH.surf;
+    const FONT = { family: 'system-ui, -apple-system, "Segoe UI", sans-serif', size: 13, color: INK2 };
+    const BASE = {
+      paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)",
+      font: FONT, margin: { l: 60, r: 20, t: 10, b: 60 },
+      hoverlabel: { bgcolor: "#0f1a19", font: { color: "#fff", size: 13 }, bordercolor: "#0f1a19" }
+    };
+    const AXIS = { gridcolor: GRID, zerolinecolor: GRID, linecolor: TH.line, tickfont: FONT };
 
   // Headline tiles
   const h = D.headline;
@@ -174,7 +188,7 @@
       x: MAJORS, y: vals.map(v => v ? v.in_stem : null),
       marker: {
         color: vals.map(v => (v && v.n_sample >= 30) ? cohortColor[c] : GREY),
-        line: { color: "#fcfcfb", width: 2 }
+        line: { color: SURF, width: 2 }
       },
       customdata: vals.map(v => v ? v.n_sample : 0),
       hovertemplate: "%{x}, " + c + "<br>%{y:.1%} in S&E work<br>n = %{customdata}<extra></extra>"
@@ -197,11 +211,11 @@
   }
   Plotly.newPlot("chart-sex", [
     { type: "bar", name: "Women", x: MAJORS, y: pooled("Women"),
-      marker: { color: WOMEN, line: { color: "#fcfcfb", width: 2 } },
+      marker: { color: WOMEN, line: { color: SURF, width: 2 } },
       text: pooled("Women").map(pct), textposition: "outside", textfont: { color: INK2, size: 12 },
       hovertemplate: "Women, %{x}<br>%{y:.1%} in S&E work<extra></extra>" },
     { type: "bar", name: "Men", x: MAJORS, y: pooled("Men"),
-      marker: { color: MEN, line: { color: "#fcfcfb", width: 2 } },
+      marker: { color: MEN, line: { color: SURF, width: 2 } },
       text: pooled("Men").map(pct), textposition: "outside", textfont: { color: INK2, size: 12 },
       hovertemplate: "Men, %{x}<br>%{y:.1%} in S&E work<extra></extra>" }
   ], Object.assign({}, BASE, {
@@ -223,7 +237,7 @@
   Plotly.newPlot("chart-status", statuses.map(([key, label, color]) => ({
     type: "bar", orientation: "h", name: label,
     y: MAJORS.slice().reverse(), x: st.map(r => r[key]).reverse(),
-    marker: { color, line: { color: "#fcfcfb", width: 2 } },
+    marker: { color, line: { color: SURF, width: 2 } },
     hovertemplate: "%{y} — " + label + ": %{x:.1%}<extra></extra>",
     text: st.map(r => r[key] >= 0.09 ? pct(r[key]) : "").reverse(),
     textposition: "inside", insidetextanchor: "middle",
@@ -239,10 +253,10 @@
   const pg = MAJORS.map(m => D.pay_gap.find(r => r.major === m));
   Plotly.newPlot("chart-salary", [
     { type: "bar", name: "Women", x: MAJORS, y: pg.map(r => r.median_salary_women),
-      marker: { color: WOMEN, line: { color: "#fcfcfb", width: 2 } },
+      marker: { color: WOMEN, line: { color: SURF, width: 2 } },
       hovertemplate: "Women, %{x}<br>$%{y:,.0f} median<extra></extra>" },
     { type: "bar", name: "Men", x: MAJORS, y: pg.map(r => r.median_salary_men),
-      marker: { color: MEN, line: { color: "#fcfcfb", width: 2 } },
+      marker: { color: MEN, line: { color: SURF, width: 2 } },
       hovertemplate: "Men, %{x}<br>$%{y:,.0f} median<extra></extra>" }
   ], Object.assign({}, BASE, {
     barmode: "group", bargap: 0.3,
@@ -257,7 +271,7 @@
     type: "scatter", mode: "markers+text",
     x: sc.map(s => s.pay_gap), y: sc.map(s => s.female_attrition),
     text: sc.map(s => s.major), textposition: "top center", textfont: { color: INK2, size: 12.5 },
-    marker: { size: 13, color: sc.map(s => MAJOR_COLOR[s.major]), line: { color: "#fcfcfb", width: 2 } },
+    marker: { size: 13, color: sc.map(s => MAJOR_COLOR[s.major]), line: { color: SURF, width: 2 } },
     hovertemplate: "%{text}<br>Pay gap: %{x:.1%}<br>Female attrition: %{y:.1%}<extra></extra>"
   }], Object.assign({}, BASE, {
     xaxis: Object.assign({}, AXIS, { title: { text: "Gender pay gap among S&E workers (positive = men earn more)", font: FONT }, tickformat: ".0%", zerolinecolor: "#c3c2b7" }),
@@ -289,7 +303,7 @@
     x: rr.map(r => r[k]).reverse(),
     marker: {
       color: rr.map(r => r.n_sample >= 30 ? reasonColor[shortLabel[k]] : GREY).reverse(),
-      line: { color: "#fcfcfb", width: 2 }
+      line: { color: SURF, width: 2 }
     },
     hovertemplate: "%{y} — " + shortLabel[k] + ": %{x:.1%}<extra></extra>"
   })), Object.assign({}, BASE, {
@@ -309,7 +323,7 @@
       type: "scatter", mode: "lines+markers", name: m,
       x: buckets, y: pts.map(p => p ? p.in_stem : null),
       line: { color: MAJOR_COLOR[m], width: 2 },
-      marker: { size: 9, color: MAJOR_COLOR[m], line: { color: "#fcfcfb", width: 2 } },
+      marker: { size: 9, color: MAJOR_COLOR[m], line: { color: SURF, width: 2 } },
       customdata: pts.map(p => p ? p.n_sample : 0),
       hovertemplate: m + ", %{x} years out<br>%{y:.1%} in S&E work<br>n = %{customdata}<extra></extra>"
     };
@@ -320,6 +334,10 @@
     legend: { orientation: "h", y: 1.15 },
     margin: { l: 60, r: 30, t: 10, b: 70 }
   }), CFG);
+  }
+
+  renderCharts();
+  document.addEventListener("themechange", renderCharts);
 })();
 </script>
 

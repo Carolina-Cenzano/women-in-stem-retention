@@ -11,9 +11,42 @@
   --accent: #1f5f5b;
   --accent-soft: #e7efee;
   --gold: #9a6a1f;
+  --code-bg: #f0efec;
   --serif: "Newsreader", Georgia, serif;
   --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+
+/* Dark theme. Applied when the reader picks dark, or by default when their
+   system prefers dark and they have not chosen light. */
+:root[data-theme="dark"] {
+  --page: #0d0d0d;
+  --surface: #1a1a19;
+  --ink: #f4f3ee;
+  --ink-2: #c3c2b7;
+  --muted: #8f8e86;
+  --grid: #2c2c2a;
+  --hairline: rgba(255, 255, 255, 0.12);
+  --accent: #4bb3ab;
+  --accent-soft: #16302e;
+  --gold: #d4a454;
+  --code-bg: #23231f;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --page: #0d0d0d;
+    --surface: #1a1a19;
+    --ink: #f4f3ee;
+    --ink-2: #c3c2b7;
+    --muted: #8f8e86;
+    --grid: #2c2c2a;
+    --hairline: rgba(255, 255, 255, 0.12);
+    --accent: #4bb3ab;
+    --accent-soft: #16302e;
+    --gold: #d4a454;
+    --code-bg: #23231f;
+  }
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -49,6 +82,12 @@ nav.top .links a {
   color: var(--ink-2); text-decoration: none; margin-left: 22px; font-size: 15px;
 }
 nav.top .links a:hover { color: var(--accent); }
+.theme-btn {
+  margin-left: 22px; background: none; border: 1px solid var(--hairline);
+  color: var(--ink-2); font: 500 13px var(--mono); border-radius: 999px;
+  padding: 4px 12px; cursor: pointer; vertical-align: middle;
+}
+.theme-btn:hover { color: var(--accent); border-color: var(--accent); }
 
 /* Type */
 h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.2; }
@@ -118,7 +157,7 @@ figure.viz figcaption {
 .prose li { margin-bottom: 5px; }
 code {
   font-family: var(--mono); font-size: 0.88em;
-  background: #f0efec; border-radius: 4px; padding: 1px 5px;
+  background: var(--code-bg); border-radius: 4px; padding: 1px 5px;
 }
 pre {
   background: #0f1a19; color: #dce7e6; border-radius: 8px;
