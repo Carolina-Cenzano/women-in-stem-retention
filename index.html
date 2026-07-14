@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Do women who study STEM stay in STEM? — Carolina Cenzano</title>
+<meta name="description" content="A retention study of women in US STEM fields built on the NSF's 2023 National Survey of College Graduates.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://cdn.plot.ly/plotly-2.32.0.min.js" charset="utf-8"></script>
+<script src="data.js"></script>
+</head>
+<body>
+
+<nav class="top">
+  <div class="wrap">
+    <a class="brand" href="https://github.com/Carolina-Cenzano">Carolina Cenzano</a>
+    <span class="links">
+      <a href="https://carolina-cenzano.github.io/movie-rating-prediction/">Movie rating project</a>
+      <a href="https://github.com/Carolina-Cenzano/women-in-stem-retention">Code on GitHub</a>
+    </span>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="kicker">Project 1 · Survey analysis</span>
+    <h1>Do women who study STEM stay in STEM?</h1>
+    <p class="lede">The United States graduates hundreds of thousands of women in science and engineering, yet the workforce tells a different story. This study follows women who earned a bachelor's degree in computer science, mathematics, physics, chemistry or engineering between 2005 and 2019, and asks how many are actually practicing today, whether pay gaps push them out, and when the leaving happens.</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+<section class="prose">
+  <h2>The data</h2>
+  <p>Everything on this page comes from one source: the <a href="https://ncses.nsf.gov/explore-data/microdata/national-survey-college-graduates" rel="noopener">2023 National Survey of College Graduates</a> public use file, a survey run by the US National Science Foundation with about 94,000 respondents weighted to represent the college-educated population. No synthetic data, no scraped estimates.</p>
+  <p>The study population is everyone whose first bachelor's degree was earned at a US institution between 2005 and 2019, in one of the five majors, split into three five-year cohorts (2005&ndash;2010, 2010&ndash;2015, 2015&ndash;2020, half-open so no year is counted twice). "Practicing STEM" means the survey classified the person's principal job as a science and engineering occupation. That leaves 13,022 respondents in the analysis sample, 3,413 of them women, and every figure below uses the survey weights, so percentages describe the real US population, not just the sample.</p>
+</section>
+
+<section>
+  <h2>The headline</h2>
+  <div class="stats" id="headline-stats"></div>
+  <p class="prose">Of the roughly 870,000 US women who earned a bachelor's degree in these five majors between 2005 and 2019, well under half work in a science and engineering occupation today. The gap to men with the same degrees is about sixteen percentage points, and it exists in every field except the smallest ones where the estimates get noisy.</p>
+</section>
+
+<section>
+  <h2>Retention by field and cohort</h2>
+  <figure class="viz">
+    <div class="viz-title">Women working in any science &amp; engineering occupation, by major and graduation cohort</div>
+    <div class="viz-sub">Weighted share of women graduates whose principal job is an S&amp;E occupation. Greyed bars have fewer than 30 sample respondents.</div>
+    <div id="chart-cohorts" style="height:400px"></div>
+    <figcaption>Newer cohorts practice at higher rates in most fields, which is what you would expect when attrition accumulates with time: the 2015&ndash;2020 graduates simply have not had as many years to leave yet. Read alongside the time chart further down.</figcaption>
+  </figure>
+
+  <figure class="viz">
+    <div class="viz-title">Women vs men, all cohorts pooled</div>
+    <div class="viz-sub">Weighted share whose principal job is an S&amp;E occupation, by first bachelor's major.</div>
+    <div id="chart-sex" style="height:380px"></div>
+    <figcaption>The gap is widest in mathematics and computer science. Chemistry retention is low for both sexes, largely because many chemistry graduates move into S&amp;E-related work such as health occupations.</figcaption>
+  </figure>
+
+  <figure class="viz">
+    <div class="viz-title">Where the women who leave actually go</div>
+    <div class="viz-sub">Current status of women graduates, all cohorts pooled. Blues are STEM work; greys are not.</div>
+    <div id="chart-status" style="height:380px"></div>
+    <figcaption>"Same field" uses the survey's occupation minor groups, so a physics graduate writing software counts as other STEM, not as practicing physics. The S&amp;E-related band is mostly health, teaching and technical management.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>Does the pay gap drive women out?</h2>
+  <p class="prose">A reasonable hypothesis: fields where women earn visibly less than men should lose more women. The survey lets us test the association directly, since it records salaries for everyone working in an S&amp;E occupation.</p>
+
+  <figure class="viz">
+    <div class="viz-title">Median salary in S&amp;E occupations, by major and sex</div>
+    <div class="viz-sub">Weighted median annual salary of graduates working in S&amp;E occupations, in US dollars.</div>
+    <div id="chart-salary" style="height:380px"></div>
+    <figcaption>Computer science carries the largest gender pay gap of the five fields; in physics and chemistry the women's median in this population is actually higher than the men's, though both fields have small samples.</figcaption>
+  </figure>
+
+  <figure class="viz">
+    <div class="viz-title">Pay gap vs female attrition</div>
+    <div class="viz-sub">Each point is one field: the gender pay gap among S&amp;E workers against the share of women graduates not working in S&amp;E.</div>
+    <div id="chart-scatter" style="height:420px"></div>
+    <figcaption id="scatter-caption"></figcaption>
+  </figure>
+
+  <p class="prose">The answer, in this data, is no: the correlation is weak and statistically indistinguishable from zero. Mathematics has the highest female attrition and a modest pay gap; chemistry pays women better than men and still loses two thirds of them. Whatever pushes women out of these fields, a simple salary differential does not explain it.</p>
+
+  <figure class="viz">
+    <div class="viz-title">Why women say they work outside their field</div>
+    <div class="viz-sub">Most important reason given by women graduates working outside the field of their highest degree. Physics greyed: fewer than 30 respondents.</div>
+    <div id="chart-reasons" style="height:400px"></div>
+    <figcaption>The survey's own follow-up question backs the correlation result: pay and promotion is one reason among several, and career-interest changes, working conditions and family reasons together carry far more weight.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>When does the leaving happen?</h2>
+  <p class="prose">A single survey cannot follow individuals over decades, but it can do the next best thing: compare otherwise similar graduates at different distances from their degree. If women left STEM steadily over time, the share still practicing would fall as years since graduation increase.</p>
+
+  <figure class="viz">
+    <div class="viz-title">Share still in S&amp;E work, by years since bachelor's degree</div>
+    <div class="viz-sub">Women graduates, weighted, bucketed by years between the 2023 survey and the degree award year.</div>
+    <div id="chart-years" style="height:420px"></div>
+    <figcaption>Most of the gap is already there in the first window. Women who are 3 to 7 years out practice at rates not far above women 13 to 18 years out, which points at the transition into the workforce, not a slow decade-long drift, as the main leak in the pipeline.</figcaption>
+  </figure>
+
+  <p class="prose">This is the study's clearest structural finding: <strong>a large share of women who studied these fields never practice them at all</strong>. Attrition after entry exists, but it is modest next to the gap at the start of the career. Retention programs aimed at mid-career women address the smaller half of the problem in this population.</p>
+</section>
+
+<section class="prose">
+  <h2>Honest limitations</h2>
+  <ul>
+    <li><strong>This is a cross-section, not a panel.</strong> The survey photographs 2023; nobody is tracked over time. The years-since-degree chart compares different people at different career stages, so cohort effects and period effects (for instance, the tech hiring cycle) are entangled with age effects.</li>
+    <li><strong>Association is not causation.</strong> The pay-gap analysis is a correlation across five fields. Five points cannot support a causal claim in either direction, which is why the survey's own stated-reasons question is shown alongside it.</li>
+    <li><strong>Small cells are flagged, not hidden.</strong> Women physics graduates number 124 in the sample; estimates involving them carry wide uncertainty and are greyed wherever the cell drops below 30 respondents.</li>
+    <li><strong>Definitions matter.</strong> "Practicing STEM" here means an S&amp;E occupation under the NCSES classification. Counting S&amp;E-related occupations (health, S&amp;E management, technical teaching) as practicing would raise every retention number substantially.</li>
+  </ul>
+
+  <h2>Reproduce it</h2>
+  <p>The full pipeline is in this repository: <code>scripts/download_data.py</code> fetches the survey file from the NSF, <code>scripts/prepare_data.py</code> builds every aggregate on this page, and the dashboard is plain HTML plus Plotly. The raw microdata is not committed (it is 140&nbsp;MB), but one script call restores it. There is a full walkthrough of the data preparation in <a href="https://github.com/Carolina-Cenzano/women-in-stem-retention/blob/main/docs/data-prep.md">the data-preparation walkthrough</a>.</p>
+  <p class="small muted">Source: National Center for Science and Engineering Statistics, National Survey of College Graduates: 2023. Public use file. The analysis and any errors are my own.</p>
+</section>
+
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    Carolina Cenzano · <a href="https://github.com/Carolina-Cenzano/women-in-stem-retention">Source on GitHub</a> · Data: NSF NCSES NSCG 2023
+  </div>
+</footer>
+
+<script>
+(function () {
+  const D = STEM_DATA;
+  const MAJORS = ["Computer Science", "Mathematics", "Physics", "Chemistry", "Engineering"];
+  const MAJOR_COLOR = {
+    "Computer Science": "#2a78d6", "Mathematics": "#1baf7a", "Physics": "#eda100",
+    "Chemistry": "#008300", "Engineering": "#4a3aa7"
+  };
+  const WOMEN = "#2a78d6", MEN = "#1baf7a";
+  const GREY = "#c3c2b7";
+  const INK = "#0b0b0b", INK2 = "#52514e", MUTED = "#898781", GRID = "#e1e0d9";
+  const FONT = { family: 'system-ui, -apple-system, "Segoe UI", sans-serif', size: 13, color: INK2 };
+
+  const BASE = {
+    paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)",
+    font: FONT, margin: { l: 60, r: 20, t: 10, b: 60 },
+    hoverlabel: { bgcolor: "#0f1a19", font: { color: "#fff", size: 13 }, bordercolor: "#0f1a19" }
+  };
+  const AXIS = { gridcolor: GRID, zerolinecolor: GRID, linecolor: "#c3c2b7", tickfont: FONT };
+  const CFG = { displayModeBar: false, responsive: true };
+  const pct = v => (v * 100).toFixed(1) + "%";
+
+  // Headline tiles
+  const h = D.headline;
+  document.getElementById("headline-stats").innerHTML = [
+    ["" + pct(h.women_in_stem), "of women graduates in these majors work in an S&E occupation"],
+    ["" + pct(h.men_in_stem), "of men with the same degrees do"],
+    [Math.round(h.women_pop_est / 1000) + "k", "US women represented, from " + h.women_sample.toLocaleString() + " survey respondents"]
+  ].map(([v, l]) => `<div class="stat"><div class="value">${v}</div><div class="label">${l}</div></div>`).join("");
+
+  // Chart 1: women by major and cohort (ordinal blue ramp), grey when n<30
+  const cohorts = ["2005-2010", "2010-2015", "2015-2020"];
+  const cohortColor = { "2005-2010": "#1c5cab", "2010-2015": "#3987e5", "2015-2020": "#86b6ef" };
+  const rows = D.retention.filter(r => r.sex === "Women");
+  const traces1 = cohorts.map(c => {
+    const vals = MAJORS.map(m => rows.find(r => r.major === m && r.cohort === c));
+    return {
+      type: "bar", name: c,
+      x: MAJORS, y: vals.map(v => v ? v.in_stem : null),
+      marker: {
+        color: vals.map(v => (v && v.n_sample >= 30) ? cohortColor[c] : GREY),
+        line: { color: "#fcfcfb", width: 2 }
+      },
+      customdata: vals.map(v => v ? v.n_sample : 0),
+      hovertemplate: "%{x}, " + c + "<br>%{y:.1%} in S&E work<br>n = %{customdata}<extra></extra>"
+    };
+  });
+  Plotly.newPlot("chart-cohorts", traces1, Object.assign({}, BASE, {
+    barmode: "group", bargap: 0.25, bargroupgap: 0.06,
+    yaxis: Object.assign({}, AXIS, { tickformat: ".0%", range: [0, 0.85] }),
+    xaxis: Object.assign({}, AXIS, { gridcolor: "rgba(0,0,0,0)" }),
+    legend: { orientation: "h", y: 1.12 }
+  }), CFG);
+
+  // Chart 2: women vs men pooled
+  function pooled(sex) {
+    return MAJORS.map(m => {
+      const rs = D.retention.filter(r => r.major === m && r.sex === sex);
+      const pop = rs.reduce((s, r) => s + r.pop_est, 0);
+      return rs.reduce((s, r) => s + r.in_stem * r.pop_est, 0) / pop;
+    });
+  }
+  Plotly.newPlot("chart-sex", [
+    { type: "bar", name: "Women", x: MAJORS, y: pooled("Women"),
+      marker: { color: WOMEN, line: { color: "#fcfcfb", width: 2 } },
+      text: pooled("Women").map(pct), textposition: "outside", textfont: { color: INK2, size: 12 },
+      hovertemplate: "Women, %{x}<br>%{y:.1%} in S&E work<extra></extra>" },
+    { type: "bar", name: "Men", x: MAJORS, y: pooled("Men"),
+      marker: { color: MEN, line: { color: "#fcfcfb", width: 2 } },
+      text: pooled("Men").map(pct), textposition: "outside", textfont: { color: INK2, size: 12 },
+      hovertemplate: "Men, %{x}<br>%{y:.1%} in S&E work<extra></extra>" }
+  ], Object.assign({}, BASE, {
+    barmode: "group", bargap: 0.3,
+    yaxis: Object.assign({}, AXIS, { tickformat: ".0%", range: [0, 0.8] }),
+    xaxis: Object.assign({}, AXIS, { gridcolor: "rgba(0,0,0,0)" }),
+    legend: { orientation: "h", y: 1.12 }
+  }), CFG);
+
+  // Chart 3: status stacked horizontal
+  const statuses = [
+    ["in_field", "Same field", "#1c5cab"],
+    ["other_stem", "Other STEM", "#3987e5"],
+    ["se_related", "S&E-related", "#86b6ef"],
+    ["non_se", "Outside STEM", "#c3c2b7"],
+    ["not_employed", "Not employed", "#898781"]
+  ];
+  const st = MAJORS.map(m => D.women_status.find(r => r.major === m));
+  Plotly.newPlot("chart-status", statuses.map(([key, label, color]) => ({
+    type: "bar", orientation: "h", name: label,
+    y: MAJORS.slice().reverse(), x: st.map(r => r[key]).reverse(),
+    marker: { color, line: { color: "#fcfcfb", width: 2 } },
+    hovertemplate: "%{y} — " + label + ": %{x:.1%}<extra></extra>",
+    text: st.map(r => r[key] >= 0.09 ? pct(r[key]) : "").reverse(),
+    textposition: "inside", insidetextanchor: "middle",
+    textfont: { color: ["#fff", "#fff", "#0b0b0b", "#0b0b0b", "#fff"][statuses.findIndex(s => s[1] === label)], size: 12 }
+  })), Object.assign({}, BASE, {
+    barmode: "stack", bargap: 0.35,
+    xaxis: Object.assign({}, AXIS, { tickformat: ".0%", range: [0, 1] }),
+    yaxis: Object.assign({}, AXIS, { gridcolor: "rgba(0,0,0,0)" }),
+    legend: { orientation: "h", y: 1.14 }, margin: { l: 130, r: 20, t: 10, b: 50 }
+  }), CFG);
+
+  // Chart 4: salary
+  const pg = MAJORS.map(m => D.pay_gap.find(r => r.major === m));
+  Plotly.newPlot("chart-salary", [
+    { type: "bar", name: "Women", x: MAJORS, y: pg.map(r => r.median_salary_women),
+      marker: { color: WOMEN, line: { color: "#fcfcfb", width: 2 } },
+      hovertemplate: "Women, %{x}<br>$%{y:,.0f} median<extra></extra>" },
+    { type: "bar", name: "Men", x: MAJORS, y: pg.map(r => r.median_salary_men),
+      marker: { color: MEN, line: { color: "#fcfcfb", width: 2 } },
+      hovertemplate: "Men, %{x}<br>$%{y:,.0f} median<extra></extra>" }
+  ], Object.assign({}, BASE, {
+    barmode: "group", bargap: 0.3,
+    yaxis: Object.assign({}, AXIS, { tickprefix: "$", tickformat: ",.0f" }),
+    xaxis: Object.assign({}, AXIS, { gridcolor: "rgba(0,0,0,0)" }),
+    legend: { orientation: "h", y: 1.12 }
+  }), CFG);
+
+  // Chart 5: scatter, pay gap vs attrition
+  const sc = D.gap_vs_attrition;
+  Plotly.newPlot("chart-scatter", [{
+    type: "scatter", mode: "markers+text",
+    x: sc.map(s => s.pay_gap), y: sc.map(s => s.female_attrition),
+    text: sc.map(s => s.major), textposition: "top center", textfont: { color: INK2, size: 12.5 },
+    marker: { size: 13, color: sc.map(s => MAJOR_COLOR[s.major]), line: { color: "#fcfcfb", width: 2 } },
+    hovertemplate: "%{text}<br>Pay gap: %{x:.1%}<br>Female attrition: %{y:.1%}<extra></extra>"
+  }], Object.assign({}, BASE, {
+    xaxis: Object.assign({}, AXIS, { title: { text: "Gender pay gap among S&E workers (positive = men earn more)", font: FONT }, tickformat: ".0%", zerolinecolor: "#c3c2b7" }),
+    yaxis: Object.assign({}, AXIS, { title: { text: "Women not in S&E work", font: FONT }, tickformat: ".0%" }),
+    margin: { l: 70, r: 30, t: 10, b: 70 }
+  }), CFG);
+  const sp = D.gap_attrition_spearman;
+  document.getElementById("scatter-caption").textContent =
+    "Spearman rank correlation " + sp.rho.toFixed(2) + " with an exact permutation p-value of " +
+    sp.p.toFixed(2) + " (Pearson " + D.gap_attrition_pearson.toFixed(2) + "). No meaningful association.";
+
+  // Chart 6: reasons for working outside field
+  const reasonKeys = ["Pay, promotion opportunities", "Working conditions", "Job location",
+                      "Change in career or professional interests", "Family-related reasons",
+                      "Job in field not available", "Other"];
+  const shortLabel = { "Pay, promotion opportunities": "Pay / promotion",
+                       "Change in career or professional interests": "Career interests changed",
+                       "Job in field not available": "No job in field",
+                       "Family-related reasons": "Family reasons",
+                       "Working conditions": "Working conditions",
+                       "Job location": "Job location", "Other": "Other" };
+  const reasonColor = { "Pay / promotion": "#2a78d6", "Career interests changed": "#1baf7a",
+                        "Working conditions": "#eda100", "Family reasons": "#4a3aa7",
+                        "No job in field": "#e34948", "Job location": "#e87ba4", "Other": "#c3c2b7" };
+  const rr = MAJORS.map(m => D.women_outside_field_reasons.find(r => r.major === m));
+  Plotly.newPlot("chart-reasons", reasonKeys.map(k => ({
+    type: "bar", orientation: "h", name: shortLabel[k],
+    y: MAJORS.slice().reverse(),
+    x: rr.map(r => r[k]).reverse(),
+    marker: {
+      color: rr.map(r => r.n_sample >= 30 ? reasonColor[shortLabel[k]] : GREY).reverse(),
+      line: { color: "#fcfcfb", width: 2 }
+    },
+    hovertemplate: "%{y} — " + shortLabel[k] + ": %{x:.1%}<extra></extra>"
+  })), Object.assign({}, BASE, {
+    barmode: "stack", bargap: 0.35,
+    xaxis: Object.assign({}, AXIS, { tickformat: ".0%", range: [0, 1] }),
+    yaxis: Object.assign({}, AXIS, { gridcolor: "rgba(0,0,0,0)" }),
+    legend: { orientation: "h", y: 1.2, font: { size: 12 } },
+    margin: { l: 130, r: 20, t: 10, b: 50 }
+  }), CFG);
+
+  // Chart 7: years since BA
+  const buckets = ["3-7", "8-12", "13-18"];
+  const curve = D.stem_by_years_since_ba.filter(r => r.sex === "Women");
+  const traces7 = MAJORS.map(m => {
+    const pts = buckets.map(b => curve.find(r => r.major === m && r.years_since_ba === b));
+    return {
+      type: "scatter", mode: "lines+markers", name: m,
+      x: buckets, y: pts.map(p => p ? p.in_stem : null),
+      line: { color: MAJOR_COLOR[m], width: 2 },
+      marker: { size: 9, color: MAJOR_COLOR[m], line: { color: "#fcfcfb", width: 2 } },
+      customdata: pts.map(p => p ? p.n_sample : 0),
+      hovertemplate: m + ", %{x} years out<br>%{y:.1%} in S&E work<br>n = %{customdata}<extra></extra>"
+    };
+  });
+  Plotly.newPlot("chart-years", traces7, Object.assign({}, BASE, {
+    xaxis: Object.assign({}, AXIS, { title: { text: "Years since bachelor's degree (2023 survey)", font: FONT }, gridcolor: "rgba(0,0,0,0)" }),
+    yaxis: Object.assign({}, AXIS, { tickformat: ".0%", range: [0, 0.85] }),
+    legend: { orientation: "h", y: 1.15 },
+    margin: { l: 60, r: 30, t: 10, b: 70 }
+  }), CFG);
+})();
+</script>
+
+</body>
+</html>
