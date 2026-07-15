@@ -38,4 +38,20 @@
   });
 
   document.addEventListener("DOMContentLoaded", label);
+
+  // Reveal elements as they scroll into view (no-op on pages without .reveal).
+  document.addEventListener("DOMContentLoaded", function () {
+    var els = document.querySelectorAll(".reveal");
+    if (!els.length) return;
+    if (!("IntersectionObserver" in window)) {
+      els.forEach(function (e) { e.classList.add("in"); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); }
+      });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
+    els.forEach(function (e) { io.observe(e); });
+  });
 })();
