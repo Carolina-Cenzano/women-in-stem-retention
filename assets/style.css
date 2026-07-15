@@ -274,11 +274,16 @@ header.hero .constellation .star:nth-of-type(6) { animation-delay: 2.9s; }
 }
 @keyframes shoot {
   0% { transform: translate(0, 0); opacity: 0; }
-  6% { opacity: 0.9; }
-  38% { transform: translate(-240px, 130px); opacity: 0; }
+  4% { opacity: 0.95; }
+  26% { transform: translate(-260px, 140px); opacity: 0; }
   100% { opacity: 0; }
 }
-header.hero .shooting { animation: shoot 9s ease-in 3s infinite; }
+header.hero .shooting { animation: shoot 7s ease-in infinite; }
+header.hero .shooting.s1 { top: 12%; right: 18%; animation-delay: 0.6s; animation-duration: 6s; }
+header.hero .shooting.s2 { top: 26%; right: 33%; animation-delay: 2.2s; animation-duration: 7s; }
+header.hero .shooting.s3 { top: 9%;  right: 46%; animation-delay: 3.8s; animation-duration: 6.5s; }
+header.hero .shooting.s4 { top: 30%; right: 9%;  animation-delay: 5.4s; animation-duration: 7.5s; }
+header.hero .shooting.s5 { top: 20%; right: 58%; animation-delay: 7.0s; animation-duration: 8s; }
 
 /* Reveal sections on scroll */
 .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
