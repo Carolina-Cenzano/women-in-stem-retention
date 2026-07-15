@@ -124,8 +124,9 @@ the browser only ever sees weighted shares and counts.
 - **Time since degree** — the weighted share still in STEM for graduates 3–7,
   8–12 and 13–18 years out, by field and sex. A single survey cannot follow the
   same people over time, so this compares different graduates at different
-  distances from their degree. Buckets with fewer than 30 sampled respondents
-  are dropped rather than shown as noise.
+  distances from their degree. Every bucket with at least a handful of
+  respondents is kept so each field shows a full line; the dashboard fades the
+  low-confidence points (fewer than 30 respondents) rather than dropping them.
 - **Headline** — the overall weighted share of women and of men in STEM, and
   the population the women represent.
 

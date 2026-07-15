@@ -53,7 +53,7 @@
   <h2>Retention by field and cohort</h2>
   <figure class="viz">
     <div class="viz-title">Women working in any science &amp; engineering occupation, by major and graduation cohort</div>
-    <div class="viz-sub">Weighted share of women graduates whose principal job is an S&amp;E occupation. Greyed bars have fewer than 30 sample respondents.</div>
+    <div class="viz-sub">Weighted share of women graduates whose principal job is an S&amp;E occupation. Faded bars have fewer than 30 sample respondents and carry more uncertainty.</div>
     <div id="chart-cohorts" style="height:400px"></div>
     <figcaption>Newer cohorts practice at higher rates in most fields, which is what you would expect when attrition accumulates with time: the 2015&ndash;2020 graduates simply have not had as many years to leave yet. Read alongside the time chart further down.</figcaption>
   </figure>
@@ -79,7 +79,7 @@
 
   <figure class="viz">
     <div class="viz-title">Why women say they work outside their field</div>
-    <div class="viz-sub">Most important reason given by women graduates working outside the field of their highest degree. Physics greyed: fewer than 30 respondents.</div>
+    <div class="viz-sub">Most important reason given by women graduates working outside the field of their highest degree. Physics faded: fewer than 30 respondents.</div>
     <div id="chart-reasons" style="height:400px"></div>
     <figcaption>No single reason dominates. Changing career interests, working conditions and family reasons together outweigh any one factor, which is why simple explanations for the leak tend to fall short.</figcaption>
   </figure>
@@ -91,7 +91,7 @@
 
   <figure class="viz">
     <div class="viz-title">Share still in S&amp;E work, by years since bachelor's degree</div>
-    <div class="viz-sub">Women graduates, weighted, bucketed by years between the 2023 survey and the degree award year.</div>
+    <div class="viz-sub">Women graduates, weighted, bucketed by years between the 2023 survey and the degree award year. Smaller, faded points have fewer than 30 respondents.</div>
     <div id="chart-years" style="height:420px"></div>
     <figcaption>Most of the gap is already there in the first window. Women who are 3 to 7 years out practice at rates not far above women 13 to 18 years out, which points at the transition into the workforce, not a slow decade-long drift, as the main leak in the pipeline.</figcaption>
   </figure>
@@ -104,7 +104,7 @@
   <ul>
     <li><strong>This is a cross-section, not a panel.</strong> The survey photographs 2023; nobody is tracked over time. The years-since-degree chart compares different people at different career stages, so cohort effects and period effects (for instance, the tech hiring cycle) are entangled with age effects.</li>
     <li><strong>This is descriptive, not causal.</strong> The survey shows what women who studied these fields are doing now and the reasons they give for leaving; it cannot say why any individual left, and the per-field reason breakdowns rest on small samples.</li>
-    <li><strong>Small cells are flagged, not hidden.</strong> Women physics graduates number 124 in the sample; estimates involving them carry wide uncertainty and are greyed wherever the cell drops below 30 respondents.</li>
+    <li><strong>Small cells are flagged, not hidden.</strong> Women physics graduates number 124 in the sample; estimates involving them carry wide uncertainty and are faded wherever the cell drops below 30 respondents.</li>
     <li><strong>Definitions matter.</strong> "Practicing STEM" here means an S&amp;E occupation under the NCSES classification. Counting S&amp;E-related occupations (health, S&amp;E management, technical teaching) as practicing would raise every retention number substantially.</li>
   </ul>
 
@@ -171,7 +171,8 @@
       type: "bar", name: c,
       x: MAJORS, y: vals.map(v => v ? v.in_stem : null),
       marker: {
-        color: vals.map(v => (v && v.n_sample >= 30) ? cohortColor[c] : GREY),
+        color: cohortColor[c],
+        opacity: vals.map(v => (v && v.n_sample >= 30) ? 1 : 0.38),
         line: { color: SURF, width: 2 }
       },
       customdata: vals.map(v => v ? v.n_sample : 0),
@@ -252,7 +253,8 @@
     y: MAJORS.slice().reverse(),
     x: rr.map(r => r[k]).reverse(),
     marker: {
-      color: rr.map(r => r.n_sample >= 30 ? reasonColor[shortLabel[k]] : GREY).reverse(),
+      color: reasonColor[shortLabel[k]],
+      opacity: rr.map(r => r.n_sample >= 30 ? 1 : 0.4).reverse(),
       line: { color: SURF, width: 2 }
     },
     hovertemplate: "%{y} — " + shortLabel[k] + ": %{x:.1%}<extra></extra>"
@@ -273,7 +275,12 @@
       type: "scatter", mode: "lines+markers", name: m,
       x: buckets, y: pts.map(p => p ? p.in_stem : null),
       line: { color: MAJOR_COLOR[m], width: 2 },
-      marker: { size: 9, color: MAJOR_COLOR[m], line: { color: SURF, width: 2 } },
+      connectgaps: true,
+      marker: {
+        size: pts.map(p => (p && p.n_sample >= 30) ? 9 : 6),
+        opacity: pts.map(p => (p && p.n_sample >= 30) ? 1 : 0.5),
+        color: MAJOR_COLOR[m], line: { color: SURF, width: 2 }
+      },
       customdata: pts.map(p => p ? p.n_sample : 0),
       hovertemplate: m + ", %{x} years out<br>%{y:.1%} in S&E work<br>n = %{customdata}<extra></extra>"
     };

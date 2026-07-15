@@ -149,14 +149,16 @@ def build(df):
     out["women_status"] = status_rows
 
     # Share still in STEM by years since the bachelor's, the closest a single
-    # cross-section gets to a time-to-exit curve. Bucketed to keep cells stable.
+    # cross-section gets to a time-to-exit curve. Every bucket with at least a
+    # handful of respondents is kept; the dashboard fades the low-confidence
+    # ones (n < 30) rather than dropping them, so every field shows a full line.
     buckets = [(3, 7, "3-7"), (8, 12, "8-12"), (13, 18, "13-18")]
     curve = []
     for major, g in df.groupby("major"):
         for female, gg in g.groupby("female"):
             for lo, hi, label in buckets:
                 sel = gg[gg["yrs_since_ba"].between(lo, hi)]
-                if len(sel) < 30:
+                if len(sel) < 10:
                     continue
                 curve.append({
                     "major": major, "sex": "Women" if female else "Men",

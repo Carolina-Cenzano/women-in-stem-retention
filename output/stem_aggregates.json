@@ -560,6 +560,13 @@
    "years_since_ba": "8-12",
    "in_stem": 0.5317959029326607,
    "n_sample": 57
+  },
+  {
+   "major": "Physics",
+   "sex": "Women",
+   "years_since_ba": "13-18",
+   "in_stem": 0.5922951704758286,
+   "n_sample": 25
   }
  ],
  "women_outside_field_reasons": [
