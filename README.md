@@ -14,11 +14,9 @@ gaps lose more women, and how long after graduation the leaving happens.
 - Under half of US women who earned a bachelor's in these five fields work in a
   science or engineering occupation today, against roughly six in ten men with
   the same degrees.
-- The pay gap does not explain who leaves. Across the five fields the
-  correlation between a field's gender pay gap and its female attrition is weak
-  and statistically indistinguishable from zero; mathematics loses the most
-  women on a modest gap, chemistry pays women slightly more than men and still
-  loses two thirds of them.
+- When women do work outside their field, no single reason dominates. Changing
+  career interests, working conditions and family reasons together outweigh any
+  one factor, so simple single-cause explanations for the leak fall short.
 - Most of the gap is present early. Women three to seven years past their degree
   already practise at rates close to women more than a decade out, which points
   at the entry into the workforce, not a slow mid-career drift, as the main leak.
@@ -62,8 +60,8 @@ https://ncses.nsf.gov/explore-data/microdata/national-survey-college-graduates
 
 This is a single cross-sectional survey, not a study that tracks the same people
 over time, so the time-since-degree view compares different women at different
-career stages rather than following individuals. The pay-gap question is an
-association across five fields and cannot support a causal claim, which is why
-the survey's own recorded reasons for leaving a field are shown alongside it.
-Both points are stated on the dashboard itself. The analysis and any errors in
-it are my own.
+career stages rather than following individuals. The results are descriptive:
+they show what women who studied these fields are doing now and the reasons they
+give for leaving, not why any individual left. The per-field reason breakdowns
+rest on small samples and are flagged where they do. This is stated on the
+dashboard itself. The analysis and any errors in it are my own.

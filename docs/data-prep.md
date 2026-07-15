@@ -27,7 +27,7 @@ occupation code lists below were read out of that codebook, not guessed.
 
 ## The columns that matter
 
-Out of the several hundred, the analysis touches eleven:
+Out of the several hundred, the analysis touches ten:
 
 | Column | What it holds | Why |
 |---|---|---|
@@ -36,7 +36,6 @@ Out of the several hundred, the analysis touches eleven:
 | `N2BAMED` | Detailed field of that bachelor's degree, a six-digit code | Picks out the five majors |
 | `N2OCPRMG` | Occupation of the current main job, grouped into eight major categories | Broad "works in STEM" test |
 | `N3OCPRNG` | Occupation of the current main job, finer minor groups | Strict "works in the same field" test |
-| `SALARY` | Annual salary on the main job | The pay-gap question |
 | `LFSTAT` | Labour-force status: employed, unemployed, not in the labour force | Employment denominators |
 | `BADGRUS` | Whether the bachelor's was earned in the US | Keeps the population US-based |
 | `NRREA` | The most important reason the person works outside their degree field | Direct evidence on why women leave |
@@ -116,23 +115,12 @@ the browser only ever sees weighted shares and counts.
 - **Women's current status** — where the women who studied each field are now,
   split into same field, other STEM, S&E-related work, outside STEM, and not
   employed. These sum to one and drive the stacked bars.
-- **Pay gap** — among graduates working in S&E occupations with a valid
-  salary, the weighted median salary for women and for men, and the gap between
-  them, `(men − women) / men`. Medians rather than means, because salary
-  distributions are skewed and the public file caps very high values. The
-  survey's logical-skip salary code is filtered out before this runs.
-- **Gap versus attrition** — one point per field pairing its pay gap with its
-  female attrition (one minus the broad retention share). The script computes
-  both the Pearson correlation and a Spearman rank correlation. With only five
-  fields, the Spearman p-value is worked out exactly by trying all 120
-  orderings rather than trusting a large-sample approximation; the small helper
-  that does this is in the script precisely so the result is honest about how
-  little five points can prove.
 - **Reasons for leaving** — for women working outside their degree field, the
-  weighted breakdown of the single most important reason they gave (`NRREA`),
-  including pay and promotion, changed interests, working conditions, family,
-  and job availability. This is the survey speaking in its own voice, which is
-  why it sits next to the pay-gap correlation.
+  weighted breakdown of the single most important reason they gave (`NRREA`):
+  changed career interests, working conditions, family reasons, job location,
+  no job available in the field, and other. This is the survey speaking in its
+  own voice about why women leave, and it is the closest the data comes to a
+  cause.
 - **Time since degree** — the weighted share still in STEM for graduates 3–7,
   8–12 and 13–18 years out, by field and sex. A single survey cannot follow the
   same people over time, so this compares different graduates at different
@@ -143,7 +131,7 @@ the browser only ever sees weighted shares and counts.
 
 ## A one-line summary of the transformation
 
-Read one 140 MB survey file, keep eleven columns, filter to US women and men
+Read one 140 MB survey file, keep ten columns, filter to US women and men
 who earned a bachelor's in five fields between 2005 and 2019, translate the
 survey's numeric codes into fields and occupations, weight everything by the
 survey weight, and write a single small JSON of shares and counts. The 140 MB

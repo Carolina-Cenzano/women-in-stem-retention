@@ -31,7 +31,7 @@
   <div class="wrap">
     <span class="kicker">Project 1 · Survey analysis</span>
     <h1>Do women who study STEM stay in STEM?</h1>
-    <p class="lede">The United States graduates hundreds of thousands of women in science and engineering, yet the workforce tells a different story. This study follows women who earned a bachelor's degree in computer science, mathematics, physics, chemistry or engineering between 2005 and 2019, and asks how many are actually practicing today, whether pay gaps push them out, and when the leaving happens.</p>
+    <p class="lede">The United States graduates hundreds of thousands of women in science and engineering, yet the workforce tells a different story. This study follows women who earned a bachelor's degree in computer science, mathematics, physics, chemistry or engineering between 2005 and 2019, and asks how many are actually practicing today, and when in a career the leaving happens.</p>
   </div>
 </header>
 
@@ -74,30 +74,14 @@
 </section>
 
 <section>
-  <h2>Does the pay gap drive women out?</h2>
-  <p class="prose">A reasonable hypothesis: fields where women earn visibly less than men should lose more women. The survey lets us test the association directly, since it records salaries for everyone working in an S&amp;E occupation.</p>
-
-  <figure class="viz">
-    <div class="viz-title">Median salary in S&amp;E occupations, by major and sex</div>
-    <div class="viz-sub">Weighted median annual salary of graduates working in S&amp;E occupations, in US dollars.</div>
-    <div id="chart-salary" style="height:380px"></div>
-    <figcaption>Computer science carries the largest gender pay gap of the five fields; in physics and chemistry the women's median in this population is actually higher than the men's, though both fields have small samples.</figcaption>
-  </figure>
-
-  <figure class="viz">
-    <div class="viz-title">Pay gap vs female attrition</div>
-    <div class="viz-sub">Each point is one field: the gender pay gap among S&amp;E workers against the share of women graduates not working in S&amp;E.</div>
-    <div id="chart-scatter" style="height:420px"></div>
-    <figcaption id="scatter-caption"></figcaption>
-  </figure>
-
-  <p class="prose">The answer, in this data, is no: the correlation is weak and statistically indistinguishable from zero. Mathematics has the highest female attrition and a modest pay gap; chemistry pays women better than men and still loses two thirds of them. Whatever pushes women out of these fields, a simple salary differential does not explain it.</p>
+  <h2>Why women leave the field</h2>
+  <p class="prose">For women who studied these fields but now work outside them, the survey records the single most important reason they give. It is rarely one thing: changing career interests, working conditions, family reasons and job availability all carry weight, and the mix differs by field.</p>
 
   <figure class="viz">
     <div class="viz-title">Why women say they work outside their field</div>
     <div class="viz-sub">Most important reason given by women graduates working outside the field of their highest degree. Physics greyed: fewer than 30 respondents.</div>
     <div id="chart-reasons" style="height:400px"></div>
-    <figcaption>The survey's own follow-up question backs the correlation result: pay and promotion is one reason among several, and career-interest changes, working conditions and family reasons together carry far more weight.</figcaption>
+    <figcaption>No single reason dominates. Changing career interests, working conditions and family reasons together outweigh any one factor, which is why simple explanations for the leak tend to fall short.</figcaption>
   </figure>
 </section>
 
@@ -119,7 +103,7 @@
   <h2>Honest limitations</h2>
   <ul>
     <li><strong>This is a cross-section, not a panel.</strong> The survey photographs 2023; nobody is tracked over time. The years-since-degree chart compares different people at different career stages, so cohort effects and period effects (for instance, the tech hiring cycle) are entangled with age effects.</li>
-    <li><strong>Association is not causation.</strong> The pay-gap analysis is a correlation across five fields. Five points cannot support a causal claim in either direction, which is why the survey's own stated-reasons question is shown alongside it.</li>
+    <li><strong>This is descriptive, not causal.</strong> The survey shows what women who studied these fields are doing now and the reasons they give for leaving; it cannot say why any individual left, and the per-field reason breakdowns rest on small samples.</li>
     <li><strong>Small cells are flagged, not hidden.</strong> Women physics graduates number 124 in the sample; estimates involving them carry wide uncertainty and are greyed wherever the cell drops below 30 respondents.</li>
     <li><strong>Definitions matter.</strong> "Practicing STEM" here means an S&amp;E occupation under the NCSES classification. Counting S&amp;E-related occupations (health, S&amp;E management, technical teaching) as practicing would raise every retention number substantially.</li>
   </ul>
@@ -249,41 +233,7 @@
     legend: { orientation: "h", y: 1.14 }, margin: { l: 130, r: 20, t: 10, b: 50 }
   }), CFG);
 
-  // Chart 4: salary
-  const pg = MAJORS.map(m => D.pay_gap.find(r => r.major === m));
-  Plotly.newPlot("chart-salary", [
-    { type: "bar", name: "Women", x: MAJORS, y: pg.map(r => r.median_salary_women),
-      marker: { color: WOMEN, line: { color: SURF, width: 2 } },
-      hovertemplate: "Women, %{x}<br>$%{y:,.0f} median<extra></extra>" },
-    { type: "bar", name: "Men", x: MAJORS, y: pg.map(r => r.median_salary_men),
-      marker: { color: MEN, line: { color: SURF, width: 2 } },
-      hovertemplate: "Men, %{x}<br>$%{y:,.0f} median<extra></extra>" }
-  ], Object.assign({}, BASE, {
-    barmode: "group", bargap: 0.3,
-    yaxis: Object.assign({}, AXIS, { tickprefix: "$", tickformat: ",.0f" }),
-    xaxis: Object.assign({}, AXIS, { gridcolor: "rgba(0,0,0,0)" }),
-    legend: { orientation: "h", y: 1.12 }
-  }), CFG);
-
-  // Chart 5: scatter, pay gap vs attrition
-  const sc = D.gap_vs_attrition;
-  Plotly.newPlot("chart-scatter", [{
-    type: "scatter", mode: "markers+text",
-    x: sc.map(s => s.pay_gap), y: sc.map(s => s.female_attrition),
-    text: sc.map(s => s.major), textposition: "top center", textfont: { color: INK2, size: 12.5 },
-    marker: { size: 13, color: sc.map(s => MAJOR_COLOR[s.major]), line: { color: SURF, width: 2 } },
-    hovertemplate: "%{text}<br>Pay gap: %{x:.1%}<br>Female attrition: %{y:.1%}<extra></extra>"
-  }], Object.assign({}, BASE, {
-    xaxis: Object.assign({}, AXIS, { title: { text: "Gender pay gap among S&E workers (positive = men earn more)", font: FONT }, tickformat: ".0%", zerolinecolor: "#c3c2b7" }),
-    yaxis: Object.assign({}, AXIS, { title: { text: "Women not in S&E work", font: FONT }, tickformat: ".0%" }),
-    margin: { l: 70, r: 30, t: 10, b: 70 }
-  }), CFG);
-  const sp = D.gap_attrition_spearman;
-  document.getElementById("scatter-caption").textContent =
-    "Spearman rank correlation " + sp.rho.toFixed(2) + " with an exact permutation p-value of " +
-    sp.p.toFixed(2) + " (Pearson " + D.gap_attrition_pearson.toFixed(2) + "). No meaningful association.";
-
-  // Chart 6: reasons for working outside field
+  // Chart 4: reasons for working outside field
   const reasonKeys = ["Pay, promotion opportunities", "Working conditions", "Job location",
                       "Change in career or professional interests", "Family-related reasons",
                       "Job in field not available", "Other"];

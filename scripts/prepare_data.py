@@ -65,48 +65,6 @@ NRREA_LABELS = {
     "7": "Other",
 }
 
-SALARY_SKIP = 9999998  # logical skip code in the NSCG salary field
-
-
-def weighted_median(values, weights):
-    order = np.argsort(values)
-    v, w = np.asarray(values)[order], np.asarray(weights)[order]
-    cum = np.cumsum(w)
-    if len(v) == 0:
-        return None
-    return float(v[np.searchsorted(cum, cum[-1] / 2.0)])
-
-
-def spearman_exact(x, y):
-    """Spearman rank correlation with an exact permutation p-value.
-
-    Only five fields go into this correlation, so the full permutation
-    distribution is tiny and there is no need for scipy here.
-    """
-    from itertools import permutations
-
-    def ranks(a):
-        order = np.argsort(a)
-        r = np.empty(len(a))
-        r[order] = np.arange(len(a))
-        return r
-
-    rx, ry = ranks(x), ranks(y)
-
-    def rho_of(a, b):
-        return float(np.corrcoef(a, b)[0, 1])
-
-    rho = rho_of(rx, ry)
-    n = len(x)
-    count = 0
-    total = 0
-    for perm in permutations(range(n)):
-        total += 1
-        if abs(rho_of(rx, ry[list(perm)])) >= abs(rho) - 1e-12:
-            count += 1
-    return rho, count / total
-
-
 def weighted_share(mask, weights):
     total = weights.sum()
     return float((weights[mask]).sum() / total) if total > 0 else None
@@ -114,14 +72,13 @@ def weighted_share(mask, weights):
 
 def load():
     cols = ["SEX_2023", "BAYR", "N2BAMED", "N2OCPRMG", "N3OCPRNG",
-            "SALARY", "LFSTAT", "BADGRUS", "AGE", "WTSURVY", "NRREA"]
+            "LFSTAT", "BADGRUS", "AGE", "WTSURVY", "NRREA"]
     df = pd.read_csv(DATA, usecols=cols,
                      dtype={"SEX_2023": str, "N2BAMED": str, "N2OCPRMG": str,
                             "N3OCPRNG": str, "LFSTAT": str, "BADGRUS": str,
                             "NRREA": str})
 
     df["BAYR"] = pd.to_numeric(df["BAYR"], errors="coerce")
-    df["SALARY"] = pd.to_numeric(df["SALARY"], errors="coerce")
     df["WTSURVY"] = pd.to_numeric(df["WTSURVY"], errors="coerce")
 
     # Bachelor's earned at a US institution, award years 2005-2019, so the
@@ -190,43 +147,6 @@ def build(df):
             "not_employed": weighted_share(not_emp, w),
         })
     out["women_status"] = status_rows
-
-    # Median salaries and the gender pay gap among graduates of each major
-    # currently working in S&E occupations.
-    sal = df[df["in_stem"] & df["SALARY"].gt(0) & df["SALARY"].lt(SALARY_SKIP)]
-    gap_rows = []
-    for major, g in sal.groupby("major"):
-        med = {}
-        for female, gg in g.groupby("female"):
-            med["Women" if female else "Men"] = weighted_median(
-                gg["SALARY"].values, gg["WTSURVY"].values)
-        if "Men" in med and "Women" in med and med["Men"]:
-            gap = (med["Men"] - med["Women"]) / med["Men"]
-        else:
-            gap = None
-        gap_rows.append({"major": major,
-                         "median_salary_women": med.get("Women"),
-                         "median_salary_men": med.get("Men"),
-                         "pay_gap": gap,
-                         "n_sample": int(len(g))})
-    out["pay_gap"] = gap_rows
-
-    # Pay gap vs female attrition, the scatter behind the correlation question.
-    att = {}
-    for major, g in df[df["female"]].groupby("major"):
-        att[major] = 1.0 - weighted_share(g["in_stem"].values, g["WTSURVY"].values)
-    scatter = []
-    for row in gap_rows:
-        if row["pay_gap"] is not None:
-            scatter.append({"major": row["major"], "pay_gap": row["pay_gap"],
-                            "female_attrition": att[row["major"]]})
-    out["gap_vs_attrition"] = scatter
-    if len(scatter) >= 3:
-        x = np.array([s["pay_gap"] for s in scatter])
-        y = np.array([s["female_attrition"] for s in scatter])
-        out["gap_attrition_pearson"] = float(np.corrcoef(x, y)[0, 1])
-        rho, p = spearman_exact(x, y)
-        out["gap_attrition_spearman"] = {"rho": rho, "p": p}
 
     # Share still in STEM by years since the bachelor's, the closest a single
     # cross-section gets to a time-to-exit curve. Bucketed to keep cells stable.
